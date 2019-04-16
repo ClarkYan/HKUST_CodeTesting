@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Visualization</title>
+
+    <link type="text/css" href="css/style.css" rel="stylesheet" />
+    <link type="text/css" href="css/example.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+
+    <script src="js/legend.js"></script>
+</head>
+
+<body>
+    <div>
+        <!--<h3>Challenge3 Visualization</h3>-->
+        <div class="row">
+        <div width="100%" id="header1" class="col-4"><h4>Forced-Directed Graph</h4></div>
+        <article class="col-8">
+            <section id="header2" style="float:left;">
+                <div><h3 style="font-style:italic;display: inline-block;float: left">Adjacency Matrix View</h3>
+                    <aside style="font-style:italic;display: inline-block;margin-left: 2em;float: right" class="dropdown">
+                        <select id="order"  class="btn btn-outline-dark dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <option value="group" class="dropdown-item">By professor id</option>
+                            <option value="name" class="dropdown-item">By fullname</option>
+                            <option value="count" class="dropdown-item">By Collabrators</option>
+                        </select>
+                    </aside>
+                </div>
+            </section>
+
+        </article>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/data-handling.js"></script>
+    <script type="text/javascript" src="js/node-link.js"></script>
+    <script type="text/javascript" src="js/adjacency-matrix.js"></script>
+    
+    <script>
+        //extract the CSE nodes
+        var header = document.querySelector('header');
+        var section = document.querySelector('section');
+        var cseNodes = [];
+        var cseEdges = [];
+        var sortCseNodes = [];
+        var sortCseEdges = [];
+
+        var requestURL = 'json/HKUST_coauthor_graph.json';
+        var request = new XMLHttpRequest();
+        request.open('GET', requestURL);
+        request.responseType = 'text';
+        request.send();
+
+        request.onload = function(){
+            // read Json file and pre-processing data
+            var authorText = request.response;
+            var authorValue = JSON.parse(authorText);
+            readJson(authorValue);
+            sortCseNodes = sortNodesByID(cseNodes);
+            sortCseEdges = sortEdgesByIndex(sortCseNodes, cseEdges);
+            // invoke the method to draw node-link diagram
+            draw_node_link(sortCseNodes, sortCseEdges);
+            // invoke the method to draw matrix view
+            draw_matrix(sortCseNodes, sortCseEdges);
+        }
+
+        function readJson(jsonObject){
+            var nodesValue = jsonObject['nodes'];
+            var edgesValue = jsonObject['edges'];
+            // pre-process nodes
+            for (var i = 0; i < nodesValue.length; i++){
+                if (nodesValue[i].dept == 'CSE') {
+                    var tempNodes =  {"fullname": nodesValue[i].fullname, "id": nodesValue[i].id, "values": 0};
+                    cseNodes.push(tempNodes);
+                }
+            }
+
+            // pre-process edges
+            for (var j = 0; j < edgesValue.length; j++){
+                var sourceBool = false;
+                var targetBool = false;
+                for (var z = 0; z < cseNodes.length; z++){
+                    if (edgesValue[j].source == cseNodes[z].id && !sourceBool){
+                        sourceBool = true;
+                    }
+                }
+                for (var zz = 0; zz < cseNodes.length; zz++){
+                    if (edgesValue[j].target == cseNodes[zz].id && !targetBool){
+                        targetBool = true;
+                    }
+                }
+                if (sourceBool && targetBool){
+                    // get number of publications
+                    var collaborations = getTotalCollaborations(edgesValue[j].publications);
+                    // initialize the group values(by group number of publications)
+                    var tempEdges = {"source":edgesValue[j].source,"target":edgesValue[j].target,"publications":collaborations,"group":0};
+                    cseEdges.push(tempEdges);
+                }
+            }
+
+            // add values in Json nodes to present the radii
+            for (var nIndex = 0; nIndex < cseNodes.length; nIndex++){
+                for (var eIndex = 0; eIndex < cseEdges.length; eIndex++) {
+                    if (cseEdges[eIndex].source == cseNodes[nIndex].id || cseEdges[eIndex].target == cseNodes[nIndex].id) {
+                        cseNodes[nIndex].values++;
+                    }
+                }
+            }
+
+            // group by collaborations
+            groupByCollaborations(cseEdges);
+        }
+    </script>
+
+</body>
+</html>
