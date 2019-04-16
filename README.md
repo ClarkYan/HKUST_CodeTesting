@@ -24,9 +24,13 @@ To show the daily temperature among each month from 2008-2017
 
 Implement a node-link diagram and adjacency matrix view to show the collabrations of all professors from Department CSE in HKUST
 
+![Challenge3](./Challenge3/challenge03.gif)
+
 ## Challenge4: [Link](./Challenge4/README.md)
 
 Completed the requirements and bunus tasks with Spotify's Worldwide Daily Song Ranking dataset
+
+![Challenge4](./Challenge4/img/question04.png)
 
 ## Contact Me
 If you've encounted any problems, please do not hesitate to send an email to [Chloe Dong (me)](https://github.com/yifeidongchloe) at yifei2959@gmail.com or opening an issue on github.
