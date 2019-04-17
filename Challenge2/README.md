@@ -4,7 +4,9 @@ HK Temperature Heatmap by Year and Month and line charts of showing the tendency
 
 To show the daily temperature among each month from 2008-2017
 
-Use Pandas library and Jupyter Notebook to conduct data processing and data visualization
+Use Pandas library to conduct data processing and data visualization
+
+Import [mplcursors](https://mplcursors.readthedocs.io/en/stable/) library to implement the hover effect
 
 ## Minimum monthly temperature heatmap and daily temperature linecharts
 
