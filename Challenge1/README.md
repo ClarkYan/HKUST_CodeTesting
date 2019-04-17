@@ -4,7 +4,9 @@ HK Temperature Heatmap by Year and Month
 
 To show the minimum and maximum temperature values among each month from 1997-2017
 
-Use Pandas library and Jupyter Notebook to conduct data processing and data visualization
+Use Pandas library to conduct data processing and data visualization
+
+Import [mplcursors](https://mplcursors.readthedocs.io/en/stable/) library to implement the hover effect
 
 ## Minimum monthly temperature heatmap
 
